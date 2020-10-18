@@ -11,7 +11,7 @@ import (
 
 func dbInit() {
 	dbUser = "admin"
-	dbPass = "H7qZZ07bP4"
+	dbPass = ""
 	dbAddress = "database-2.czhb3qjocyn9.us-east-2.rds.amazonaws.com"
 	dbSalt = "api12345"
 	DBMS = GormConnect()
