@@ -9,6 +9,14 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+func dbInit() {
+	dbUser = "admin"
+	dbPass = "H7qZZ07bP4"
+	dbAddress = "database-2.czhb3qjocyn9.us-east-2.rds.amazonaws.com"
+	dbSalt = "api12345"
+	DBMS = GormConnect()
+}
+
 func TestCheckExist(t *testing.T) {
 	type args struct {
 		username string
@@ -120,27 +128,6 @@ func TestDbSwtich(t *testing.T) {
 	}
 }
 
-func TestCallAuth(t *testing.T) {
-	type args struct {
-		tmpUser string
-		tmpPass string
-	}
-	tests := []struct {
-		name string
-		args args
-		want responseData
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := CallAuth(tt.args.tmpUser, tt.args.tmpPass); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CallAuth() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestCallUpdate(t *testing.T) {
 	type args struct {
 		IdReq   string
@@ -225,26 +212,6 @@ func TestCallFind(t *testing.T) {
 	}
 }
 
-func TestCallRaw(t *testing.T) {
-	type args struct {
-		rawString string
-	}
-	tests := []struct {
-		name string
-		args args
-		want responseList
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := CallRaw(tt.args.rawString); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CallRaw() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestApiHandlers(t *testing.T) {
 	type args struct {
 		w   http.ResponseWriter
@@ -263,8 +230,35 @@ func TestApiHandlers(t *testing.T) {
 	}
 }
 
-func TestAddSpace(t *testing.T) {
-	// Test code ok.
+/////////////////////////////////////// Test code ok. //////////////////////////////////////////////////
+
+func TestCallRaw(t *testing.T) {
+	dbInit()
+	type args struct {
+		rawString string
+	}
+	tests := []struct {
+		name string
+		args args
+		want responseList
+	}{
+		{
+			args: args{
+				rawString: "SELECT name FROM member WHERE name='kato2';",
+			},
+			want: responseList{Status: "Success", Members: nil},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := CallRaw(tt.args.rawString); got.Members[0].Name != "kato2" {
+				t.Errorf("CallRaw() = %v, want %v", got, "kato2")
+			}
+		})
+	}
+}
+
+func TestAddSpace(t *testing.T) { // Test code ok.
 	type args struct {
 		strs string
 	}
@@ -273,7 +267,6 @@ func TestAddSpace(t *testing.T) {
 		args args
 		want string
 	}{
-		// TODO: Add test cases.
 		{
 			args: args{
 				strs: "test1234",
@@ -285,6 +278,34 @@ func TestAddSpace(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := AddSpace(tt.args.strs); got != tt.want {
 				t.Errorf("AddSpace() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCallAuth(t *testing.T) { // Test code ok.
+	dbInit()
+	type args struct {
+		tmpUser string
+		tmpPass string
+	}
+	tests := []struct {
+		name string
+		args args
+		want responseData
+	}{
+		{
+			args: args{
+				tmpUser: "kato2",
+				tmpPass: "pass",
+			},
+			want: responseData{Status: "Success", Message: "auth ok."},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := CallAuth(tt.args.tmpUser, tt.args.tmpPass); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CallAuth() = %v, want %v", got, tt.want)
 			}
 		})
 	}
