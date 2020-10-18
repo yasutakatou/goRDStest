@@ -264,6 +264,7 @@ func TestApiHandlers(t *testing.T) {
 }
 
 func TestAddSpace(t *testing.T) {
+	// Test code ok.
 	type args struct {
 		strs string
 	}
@@ -273,6 +274,12 @@ func TestAddSpace(t *testing.T) {
 		want string
 	}{
 		// TODO: Add test cases.
+		{
+			args: args{
+				strs: "test1234",
+			},
+			want: "test123400000000",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
