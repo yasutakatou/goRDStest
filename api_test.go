@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"bytes"
+	"fmt"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -23,6 +24,7 @@ func dbInit() {
 }
 
 func TestApiHandlers(t *testing.T) {
+	dbInit()
 	ts := httptest.NewServer(http.HandlerFunc(ApiHandlers))
 	defer ts.Close()
 
@@ -33,15 +35,14 @@ func TestApiHandlers(t *testing.T) {
 }
 
 func requestAPI(endpoint, command, tmpName, tmpPassword string) responseData {
-	type testJson struct {
-		name     string `json:name`
-		password string `json:password`
+	type restJson struct {
+		Name     string `json:"name"`
+		Password string `json:"password"`
 	}
 
-	data := testJson{
-		name:   tmpName,
-		password: tmpPassword,
-	}
+	data := new(restJson)
+	data.Name = tmpName
+	data.Password = tmpPassword
 
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
@@ -50,7 +51,7 @@ func requestAPI(endpoint, command, tmpName, tmpPassword string) responseData {
 
 	client := &http.Client{}
 
-	resp, err := client.Post(endpoint, "application/json", bytes.NewBuffer(payloadBytes))
+	resp, err := client.Post(endpoint + command, "application/json", bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		return responseData{Status: "Error", Message: "not send rest api " + endpoint}
 	}
@@ -59,7 +60,7 @@ func requestAPI(endpoint, command, tmpName, tmpPassword string) responseData {
 	if err != nil {
 		return responseData{Status: "Error", Message: "not send rest api " + endpoint}
 	}
-
+	fmt.Println(string(body))
 	var result responseData
 	if err := json.Unmarshal(body, &result); err != nil {
 		return responseData{Status: "Error", Message: "Unmarshal error"}
@@ -67,8 +68,6 @@ func requestAPI(endpoint, command, tmpName, tmpPassword string) responseData {
 
 	return result
 }
-
-/////////////////////////////////////// Test code ok. //////////////////////////////////////////////////
 
 func TestDbSwtich(t *testing.T) {
 	dbInit()
@@ -139,7 +138,7 @@ func TestDecrypt(t *testing.T) {
 	}{
 		{
 			args: args{
-				encodedData: "Dv1qeJmCJcFJmxJwSQEWAX3Gg5P_7nMajXle5uqv8DM=",
+				encodedData: "f-d-3O44QBjSXbSggdCzLu7qSy0DYbKFJ1lMZFwYBLI=",
 				secret: []byte(AddSpace(dbSalt)),
 			},
 			want: "pass",
