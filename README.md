@@ -2,7 +2,7 @@
 
 ### AWS RDS+Golang+GORMなテストリポジトリ
 
-Amazon Linux2 + AWS RDS(mysql)でgormを使って簡単なCRUDなAPIを実装するテスト<br>
+**Amazon Linux2 + AWS RDS(mysql)でgormを使って簡単なCRUDなAPIを実装するテスト**<br>
 ユーザー名、パスワードを扱うシンプルなAPIです。<br>
 
 ### まず以下のようにRDS側でデータベース、テーブルを事前準備してください
@@ -17,7 +17,7 @@ ALTER TABLE test.member MODIFY id INT AUTO_INCREMENT;
 
 ### SSL証明書を準備してください。
 
-[mkcert](https://kakakakakku.hatenablog.com/entry/2018/07/27/120009)などを使ってSSL証明書を作成してください。
+[mkcert](https://kakakakakku.hatenablog.com/entry/2018/07/27/120009)などを使って**SSL証明書**を作成してください。
 
 ### 環境変数を定義してください。
 
@@ -48,6 +48,7 @@ go build api.go
 ```
 
 で、go.modのモジュールが組み込まれて動くと思う。<br>
+**ESCキーで終了**します。<br>
 
 ### 起動オプションがあります。
 
@@ -61,7 +62,6 @@ go build api.go
 |debug|デバッグモード|
 
 以下みたいに使います。<br>
-
 
 ```
 ./api -cert=test.pem -key=test-key.pem -debug
@@ -96,4 +96,10 @@ curl -k -H "Content-Type: application/json" -X POST -d '{"name":"user2", "passwo
 ### テスト用コード
 
 ~~既存のDBべったりで書いてしまったのでそのうち修正しないと。。~~
+
+### 開発するのに超お役立ちなFYI
+
+[Visual Studio Code で編集中のテストコードを実行する (Golang編)](https://qiita.com/ykato/items/6b50d7d14be05128f74d)
+[VS CodeのGo言語テストコード生成ツールを使ってみたらめちゃくちゃ便利だった話とか](https://kdnakt.hatenablog.com/entry/2019/01/03/080000)
+
 
