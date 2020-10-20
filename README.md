@@ -39,6 +39,8 @@ export API_ADDRESS=xxxx.xxxx.us-east-2.rds.amazonaws.com
 export API_SALT=api12345
 ```
 
+*注)APT_SALTはパスワード文字列暗号化に使う文字列です。8～16桁の英数字を指定できます。*<br>
+
 ### Amazon Linux(じゃなくてUbuntuとかでも良いけど)のインスタンスを起動します。
 
 リポジトリをcloneするとか、zipを置くとかでコードを配置してください。<br>
