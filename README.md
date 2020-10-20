@@ -2,7 +2,8 @@
 
 ### AWS RDS+Golang+GORMなテストリポジトリ
 
-Amazon Linux2 + AWS RDS(mysql)でgormを使ってCRUDなAPIを実装するテスト<br>
+Amazon Linux2 + AWS RDS(mysql)でgormを使って簡単なCRUDなAPIを実装するテスト<br>
+ユーザー名、パスワードを扱うシンプルなAPIです。<br>
 
 ### まず以下のようにRDS側でデータベース、テーブルを事前準備してください
 
@@ -13,6 +14,10 @@ create table test.member(id int primary key, name varchar(8),password varchar(10
 
 ALTER TABLE test.member MODIFY id INT AUTO_INCREMENT;
 ```
+
+### SSL証明書を準備してください。
+
+[mkcert](https://kakakakakku.hatenablog.com/entry/2018/07/27/120009)などを使ってSSL証明書を作成してください。
 
 ### 環境変数を定義してください。
 
@@ -34,8 +39,6 @@ export API_ADDRESS=xxxx.xxxx.us-east-2.rds.amazonaws.com
 export API_SALT=api12345
 ```
 
-*note) SALTはパスワードをRDSに保存時に暗号化する際に使う文字列です。8～16桁で指定できます。*
-
 ### Amazon Linux(じゃなくてUbuntuとかでも良いけど)のインスタンスを起動します。
 
 リポジトリをcloneするとか、zipを置くとかでコードを配置してください。<br>
@@ -46,4 +49,51 @@ go build api.go
 
 で、go.modのモジュールが組み込まれて動くと思う。<br>
 
-### 
+### 起動オプションがあります。
+
+起動時に引数から与えるオプションがあります。<br>
+
+|オプション名|定義内容|
+|:---|:---|
+|cert|SSL証明書の公開鍵ファイル|
+|key|SSL証明書の秘密鍵ファイル|
+|port|APIを起動するポート番号|
+|debug|デバッグモード|
+
+以下みたいに使います。<br>
+
+
+```
+./api -cert=test.pem -key=test-key.pem -debug
+```
+
+### 使えるAPI
+
+以下APIがあります。<br>
+
+|API名|JSON名|機能|
+|:---|:---|:---|
+|raw|raw|生SQLを投げ込みます|
+|find|search|ユーザー名検索します|
+|create|name / password|アカウントを作成します|
+|read|id|該当ID番号のユーザーを表示します|
+|update|id / name / password|アカウント情報をアップデートします|
+|delete|id|該当ID番号のユーザーを消します|
+|auth|name / password|ユーザー名、パスワードで認証します|
+
+以下みたいに使います。<br>
+
+```
+curl -k -H "Content-Type: application/json" -X POST -d '{"raw":" SELECT * FROM test.member;"}' https://localhost:8080/raw
+curl -k -H "Content-Type: application/json" -X POST -d '{"search":"user3"}' https://localhost:8080/find
+curl -k -H "Content-Type: application/json" -X POST -d '{"name":"user2", "password": "pass"}' https://localhost:8080/create
+curl -k -H "Content-Type: application/json" -X POST -d '{"id":"8"}' https://localhost:8080/read
+curl -k -H "Content-Type: application/json" -X POST -d '{"id": "8", "name":"user2", "password": "pass"}' https://localhost:8080/update
+curl -k -H "Content-Type: application/json" -X POST -d '{"id":1}' https://localhost:8080/delete
+curl -k -H "Content-Type: application/json" -X POST -d '{"name":"user2", "password": "pass"}' https://localhost:8080/auth
+```
+
+### テスト用コード
+
+~~既存のDBべったりで書いてしまったのでそのうち修正しないと。。~~
+
