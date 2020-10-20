@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+	{
+	"label": "run Go test here",
+	"type": "shell",
+	"command": "sh gotest.sh ${relativeFile} ${lineNumber}",
+	"group": "test",
+	"presentation": {
+	"reveal": "always",
+	"panel": "shared"
+	}
+	}
+	]
+   }
